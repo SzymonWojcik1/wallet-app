@@ -1,5 +1,6 @@
 package com.szymonwojcik.wallet_app.service;
 
+import com.szymonwojcik.wallet_app.dto.CreateUserRequest;
 import com.szymonwojcik.wallet_app.model.User;
 import com.szymonwojcik.wallet_app.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,10 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User create(User user){
+    public User create(CreateUserRequest request){
+        User user = new User();
+        user.setUsername(request.getUsername());
+
         return userRepository.save(user);
     }
 

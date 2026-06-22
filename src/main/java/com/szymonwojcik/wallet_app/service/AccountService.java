@@ -1,7 +1,10 @@
 package com.szymonwojcik.wallet_app.service;
 
+import com.szymonwojcik.wallet_app.dto.CreateAccountRequest;
 import com.szymonwojcik.wallet_app.model.Account;
+import com.szymonwojcik.wallet_app.model.User;
 import com.szymonwojcik.wallet_app.repository.AccountRepository;
+import com.szymonwojcik.wallet_app.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +15,7 @@ import java.util.List;
 public class AccountService {
 
     private final AccountRepository accountRepository;
+    private final UserRepository userRepository;
 
     public Account deposit(Long accountId, BigDecimal amount) {
         Account account = getById(accountId);
@@ -49,12 +53,18 @@ public class AccountService {
 
     }
 
-    public AccountService(AccountRepository accountRepository) {
+    public AccountService(AccountRepository accountRepository, UserRepository userRepository) {
         this.accountRepository = accountRepository;
+        this.userRepository = userRepository;
     }
 
-    public Account create(Account account){
+    public Account create(CreateAccountRequest request){
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(()-> new RuntimeException("User not found"));
+        Account account = new Account();
+        account.setUser(user);
         account.setBalance(BigDecimal.ZERO);
+
         return accountRepository.save(account);
     }
 

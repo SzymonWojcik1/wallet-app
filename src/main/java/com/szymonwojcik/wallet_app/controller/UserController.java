@@ -1,5 +1,6 @@
 package com.szymonwojcik.wallet_app.controller;
 
+import com.szymonwojcik.wallet_app.dto.CreateUserRequest;
 import com.szymonwojcik.wallet_app.model.User;
 import com.szymonwojcik.wallet_app.service.UserService;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +18,8 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@RequestBody User user){
-        return userService.create(user);
+    public User create(@RequestBody CreateUserRequest request){
+        return userService.create(request);
     }
 
     @GetMapping

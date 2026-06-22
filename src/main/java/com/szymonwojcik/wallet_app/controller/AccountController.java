@@ -1,10 +1,13 @@
 package com.szymonwojcik.wallet_app.controller;
 
+import com.szymonwojcik.wallet_app.dto.CreateAccountRequest;
+import com.szymonwojcik.wallet_app.dto.DepositRequest;
+import com.szymonwojcik.wallet_app.dto.TransferRequest;
+import com.szymonwojcik.wallet_app.dto.WithdrawRequest;
 import com.szymonwojcik.wallet_app.model.Account;
 import com.szymonwojcik.wallet_app.service.AccountService;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -18,8 +21,8 @@ public class AccountController {
     }
 
     @PostMapping
-    public Account create(@RequestBody Account account) {
-        return accountService.create(account);
+    public Account create(@RequestBody CreateAccountRequest request) {
+        return accountService.create(request);
     }
 
     @GetMapping
@@ -35,23 +38,23 @@ public class AccountController {
     @PostMapping("/{id}/deposit")
     public Account deposit(
             @PathVariable Long id,
-            @RequestParam BigDecimal amount) {
-        return accountService.deposit(id, amount);
+            @RequestBody DepositRequest request) {
+        return accountService.deposit(id, request.getAmount());
     }
 
     @PostMapping("/{id}/withdraw")
     public Account withdraw(
             @PathVariable Long id,
-            @RequestParam BigDecimal amount) {
-        return accountService.withdraw(id, amount);
+            @RequestBody WithdrawRequest request) {
+        return accountService.withdraw(id, request.getAmount());
     }
 
     @PostMapping("/transfer")
-    public String transfer(
-                         @RequestParam Long from,
-                         @RequestParam Long to,
-                         @RequestParam BigDecimal amount) {
-        accountService.transfer(from, to, amount);
+    public String transfer(@RequestBody TransferRequest request) {
+        accountService.transfer(
+                request.getFromAccountId(),
+                request.getToAccountId(),
+                request.getAmount());
 
         return "Transfer succesful";
     }
