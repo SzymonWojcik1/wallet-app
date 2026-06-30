@@ -1,10 +1,12 @@
 package com.szymonwojcik.wallet_app.controller;
 
-import com.szymonwojcik.wallet_app.dto.CreateAccountRequest;
-import com.szymonwojcik.wallet_app.dto.DepositRequest;
-import com.szymonwojcik.wallet_app.dto.TransferRequest;
-import com.szymonwojcik.wallet_app.dto.WithdrawRequest;
-import com.szymonwojcik.wallet_app.model.Account;
+import com.szymonwojcik.wallet_app.dto.request.CreateAccountRequest;
+import com.szymonwojcik.wallet_app.dto.request.DepositRequest;
+import com.szymonwojcik.wallet_app.dto.request.TransferRequest;
+import com.szymonwojcik.wallet_app.dto.request.WithdrawRequest;
+import com.szymonwojcik.wallet_app.dto.response.AccountResponse;
+import com.szymonwojcik.wallet_app.dto.response.TransactionResponse;
+import com.szymonwojcik.wallet_app.mapper.AccountMapper;
 import com.szymonwojcik.wallet_app.service.AccountService;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,32 +23,35 @@ public class AccountController {
     }
 
     @PostMapping
-    public Account create(@RequestBody CreateAccountRequest request) {
-        return accountService.create(request);
+    public AccountResponse create(@RequestBody CreateAccountRequest request) {
+        return AccountMapper.toResponse(accountService.create(request));
     }
 
     @GetMapping
-    public List<Account> getAll() {
-        return accountService.getAll();
+    public List<AccountResponse> getAll() {
+        return accountService.getAll()
+                .stream()
+                .map(AccountMapper::toResponse)
+                .toList();
     }
 
     @GetMapping("/{id}")
-    public Account getById(@PathVariable Long id) {
-        return accountService.getById(id);
+    public AccountResponse getById(@PathVariable Long id) {
+        return AccountMapper.toResponse(accountService.getById(id));
     }
 
     @PostMapping("/{id}/deposit")
-    public Account deposit(
+    public AccountResponse deposit(
             @PathVariable Long id,
             @RequestBody DepositRequest request) {
-        return accountService.deposit(id, request.getAmount());
+        return AccountMapper.toResponse(accountService.deposit(id, request.getAmount()));
     }
 
     @PostMapping("/{id}/withdraw")
-    public Account withdraw(
+    public AccountResponse withdraw(
             @PathVariable Long id,
             @RequestBody WithdrawRequest request) {
-        return accountService.withdraw(id, request.getAmount());
+        return AccountMapper.toResponse(accountService.withdraw(id, request.getAmount()));
     }
 
     @PostMapping("/transfer")
@@ -56,6 +61,6 @@ public class AccountController {
                 request.getToAccountId(),
                 request.getAmount());
 
-        return "Transfer succesful";
+        return "Transfer to account: "+request.getToAccountId()+" of "+request.getAmount()+" succesful";
     }
 }

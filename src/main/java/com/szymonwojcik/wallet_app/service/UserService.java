@@ -1,6 +1,6 @@
 package com.szymonwojcik.wallet_app.service;
 
-import com.szymonwojcik.wallet_app.dto.CreateUserRequest;
+import com.szymonwojcik.wallet_app.dto.request.CreateUserRequest;
 import com.szymonwojcik.wallet_app.model.User;
 import com.szymonwojcik.wallet_app.repository.UserRepository;
 import org.springframework.stereotype.Service;

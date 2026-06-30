@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Getter
@@ -23,4 +24,12 @@ public class Account {
     @JoinColumn(name = "user_id")
     @JsonBackReference
     private User user;
+
+    @OneToMany(mappedBy = "fromAccount")
+    @JsonBackReference
+    private List<Transaction> outgoingTransactions;
+
+    @OneToMany(mappedBy = "toAccount")
+    @JsonBackReference
+    private List<Transaction> incomingTransactions;
 }

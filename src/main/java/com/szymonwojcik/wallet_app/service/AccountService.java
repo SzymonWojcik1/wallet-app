@@ -1,6 +1,8 @@
 package com.szymonwojcik.wallet_app.service;
 
-import com.szymonwojcik.wallet_app.dto.CreateAccountRequest;
+import com.szymonwojcik.wallet_app.dto.request.CreateAccountRequest;
+import com.szymonwojcik.wallet_app.enums.TransactionStatus;
+import com.szymonwojcik.wallet_app.enums.TransactionType;
 import com.szymonwojcik.wallet_app.model.Account;
 import com.szymonwojcik.wallet_app.model.User;
 import com.szymonwojcik.wallet_app.repository.AccountRepository;
@@ -16,14 +18,24 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
+    private final TransactionService transactionService;
 
     public Account deposit(Long accountId, BigDecimal amount) {
         Account account = getById(accountId);
 
         account.setBalance(account.getBalance().add(amount));
 
-        return accountRepository.save(account);
+        Account saveAccount = accountRepository.save(account);
 
+        transactionService.createTransaction(
+                TransactionType.DEPOSIT,
+                TransactionStatus.COMPLETED,
+                amount,
+                null,
+                saveAccount
+        );
+
+        return saveAccount;
     }
 
     public Account withdraw(Long accountId, BigDecimal amount) {
@@ -33,7 +45,17 @@ public class AccountService {
 
         account.setBalance(account.getBalance().subtract(amount));
 
-        return accountRepository.save(account);
+        Account saveAccount = accountRepository.save(account);
+
+        transactionService.createTransaction(
+                TransactionType.WITHDRAW,
+                TransactionStatus.COMPLETED,
+                amount,
+                saveAccount,
+                null
+        );
+
+        return saveAccount;
     }
 
     @Transactional
@@ -51,11 +73,19 @@ public class AccountService {
         accountRepository.save(from);
         accountRepository.save(to);
 
+        transactionService.createTransaction(
+                TransactionType.TRANSFER,
+                TransactionStatus.COMPLETED,
+                amount,
+                from,
+                to
+        );
     }
 
-    public AccountService(AccountRepository accountRepository, UserRepository userRepository) {
+    public AccountService(AccountRepository accountRepository, UserRepository userRepository, TransactionService transactionService) {
         this.accountRepository = accountRepository;
         this.userRepository = userRepository;
+        this.transactionService = transactionService;
     }
 
     public Account create(CreateAccountRequest request){

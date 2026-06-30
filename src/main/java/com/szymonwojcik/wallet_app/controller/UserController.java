@@ -1,7 +1,8 @@
 package com.szymonwojcik.wallet_app.controller;
 
-import com.szymonwojcik.wallet_app.dto.CreateUserRequest;
-import com.szymonwojcik.wallet_app.model.User;
+import com.szymonwojcik.wallet_app.dto.request.CreateUserRequest;
+import com.szymonwojcik.wallet_app.dto.response.UserResponse;
+import com.szymonwojcik.wallet_app.mapper.UserMapper;
 import com.szymonwojcik.wallet_app.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,17 +19,20 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@RequestBody CreateUserRequest request){
-        return userService.create(request);
+    public UserResponse create(@RequestBody CreateUserRequest request){
+        return UserMapper.toResponse(userService.create(request));
     }
 
     @GetMapping
-    public List<User> getAll(){
-        return userService.getAll();
+    public List<UserResponse> getAll(){
+        return userService.getAll()
+                .stream()
+                .map(UserMapper::toResponse)
+                .toList();
     }
 
     @GetMapping("/{id}")
-    public User getById(@PathVariable Long id){
-        return userService.getById(id);
+    public UserResponse getById(@PathVariable Long id){
+        return UserMapper.toResponse(userService.getById(id));
     }
 }

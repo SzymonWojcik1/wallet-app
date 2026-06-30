@@ -1,4 +1,4 @@
-package com.szymonwojcik.wallet_app.dto;
+package com.szymonwojcik.wallet_app.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;
